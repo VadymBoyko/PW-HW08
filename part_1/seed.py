@@ -5,18 +5,19 @@ from models import Author, Quote
 authors = Author.objects()
 quotes = Quote.objects()
 
+
 def get_author(fullname):
-    for a in authors:
-        if fullname == a.fullname:
-            return a
-    return None
+    result = Author.objects(fullname=fullname)
+    if result.count() == 0:
+        return None
+    return result[0]
 
 
 def get_quote(text):
-    for q in quotes:
-        if text == q.quote:
-            return q
-    return None
+    result = Quote.objects(quote=text)
+    if result.count() == 0:
+        return None
+    return result[0]
 
 
 def load_authors():
@@ -26,8 +27,8 @@ def load_authors():
     js = json.loads(data)
 
     for i in js:
-        if not get_author(i['fullname']):   # зроблено для того, аби не задвоювати авторів при повторному запуску
-            Author(fullname=i['fullname'],born_date=i['born_date'], born_location=i['born_location'],\
+        if not get_author(i['fullname']):  # зроблено для того, аби не задвоювати авторів при повторному запуску
+            Author(fullname=i['fullname'], born_date=i['born_date'], born_location=i['born_location'], \
                    description=i['description']).save()
 
 
@@ -38,9 +39,9 @@ def load_quotes():
     js = json.loads(data)
 
     for i in js:
-        if not get_quote((i['quote'])):   # зроблено для того, аби не задвоювати цитати при повторному запуску
+        if not get_quote((i['quote'])):  # зроблено для того, аби не задвоювати цитати при повторному запуску
             author = get_author(i['author'])
-            Quote(quote=i['quote'],author=author, tags=i['tags']).save()
+            Quote(quote=i['quote'], author=author, tags=i['tags']).save()
 
 
 if __name__ == '__main__':
